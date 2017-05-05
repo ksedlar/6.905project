@@ -17,5 +17,7 @@
             "code/generic-arith.scm"             ;from generic-arithmetic
             "code/generics.scm"                  ;from generic-arithmetic
 	    "code/stormer2.scm"			;from common
+	    "code/vector-arith"
+	    "code/matrices-arith"
 	    ))
 
