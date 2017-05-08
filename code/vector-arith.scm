@@ -1,5 +1,3 @@
-;;; Vincent Anioke 
-
 
 ;;; Vector Arithmetic
 

@@ -71,7 +71,7 @@
 
 
 (define (mult-by-scalar mat scalar)
-	(define multiply-by-scalar (lambda (v) (* v scalar)))
+	(define multiply-by-scalar (lambda (v) (scalar-product v scalar)))
 	(define apply-scalar-product (matrix-element-wise multiply-by-scalar))
 	(apply-scalar-product mat))
 
@@ -81,7 +81,7 @@
 		((and (or (symbolic? m1) (number? m1)) (matrix? m2)) (mult-by-scalar m2 m1))))
 
 (define (negate-mat m1)
-	(define neg-op (matrix-element-wise -))
+	(define neg-op (matrix-element-wise negate-vect))
 	(neg-op m1))
 
 (define (matrix-extender base-arithmetic)
