@@ -114,6 +114,37 @@
 
 ; tests on determinant
 
+(determinant (vector (vector 1 2) (3 4)))
+; Should produce -2
+
+(determinant (vector (vector 1 -1) (-1 1)))
+; Should produce 0
+
+(determinant (vector (vector 1 2 3) (vector 4 5 0) (vector 7 8 9)))
+; Should produce -36  
+
+(determinant (vector (vector 1 2 3) (vector 4 5 6) (vector 7 8 9)))
+; Should produce 0
+
+(determinant (vector (vector 1 1 0 1) (vector 1 1 1 0) (vector 1 0 1 1) (vector 1 1 0 0)))
+; Should produce -1
+
 ; tests on matrix inverse
+
+(inverse (vector (vector 1 2) (3 4)))
+; Should produce (vector (vector -2 1) (vector 1.5 -0.5))
+
+(inverse (vector (vector 1 -1) (-1 1)))
+; Should say the matrix is not invertible                                                                   
+
+(inverse (vector (vector 1 2 3) (vector 4 5 0) (vector 7 8 9)))
+; Should produce (vector (vector -1.25 -.1666666 .416666666) (vector 1 .333333 -0.333333) (vector .08333333 -.1666666 .08333333))
+
+(inverse (vector (vector 1 2 3) (vector 4 5 6) (vector 7 8 9)))
+; Should say the matrix is not invertible
+
+(inverse (vector (vector 1 1 0 1) (vector 1 1 1 0) (vector 1 0 1 1) (vector 1 1 0 0)))
+; Should produce (vector (vector -1 -1 1 2) (vector 1 1 -1 -1) (vector 0 1 0 -1) (vector 1 0 0 -1))  
+
 
 ; tests on division
