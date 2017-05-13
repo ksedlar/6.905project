@@ -84,6 +84,47 @@
 	(define neg-op (matrix-element-wise negate-vect))
 	(neg-op m1))
 
+(define (square-matrix? m1)
+  (and matrix? (= (vector-length m1) (vector-length (vector-first m1)))))
+
+(define (det-2by2-mats m1)
+  (let ((a (vector-first (vector-first m1)))
+        (b (vector-first (vector-second m1)))
+        (c (vector-second (vector-first m1)))
+        (d (vector-second (vector-second m1))))
+    (- (* a d) (* b c))))
+
+(define (vec-remove-nth v1 n)
+  (let ((v3 (vector-head v1 n))
+        (v4 (vector-tail v1 (+ n 1))))
+    (define v5 (vector-grow v3 (- (vector-length v1) 1)))
+    (subvector-move-left! v4 0 (vector-length v4) v5 (vector-length v3))
+    v5))
+
+(define (laplace-term m1 n)
+  (define coef
+    (if (even? n)
+        (vector-ref (vector-first m1) n)
+        (- (vector-ref (vector-first m1) n))))
+  (define submats
+    (vector-map (lambda (v1) (vec-remove-nth v1 n)) (vector-tail m1 1)))
+  (* coef (determinant-mats submats)))
+
+(define (large-mats-helper m1 n sum)
+  (if (<= (vector-length m1) n)
+      sum
+      (large-mats-helper m1 (+ n 1) (+ sum (laplace-term m1 n)))))
+
+(define (det-large-mats m1)
+  (large-mats-helper m1 0 0))
+
+(define (determinant-mats m1)
+  (if (square-matrix? m1)
+      (cond ((= (vector-length m1) 1) (vector-first (vector-first m1)))
+            ((= (vector-length m1) 2) (det-2by2-mats m1))
+            (else (det-large-mats m1)))
+      (error "Not a square matrix:" m1)))
+
 (define (matrix-extender base-arithmetic)
 	(make-arithmetic 'matrix matrix? (list base-arithmetic)
 	(lambda (name base-constant)

@@ -112,22 +112,72 @@
 ; Should produce (vector (vector (+ 2 (* 2 'a))) (vector (+ 6 (* 4 'a))))
 ;Value 14: #(#((+ 2 (+ (* 2 a) 0))) #((+ 6 (+ (* 4 a) 0)))) 
 
+; tests on subfunctions for determinant
+
+(define v1 (vector 1 2 3 4))
+
+(define m1 (vector (vector 1 2 3) (vector 4 5 6) (vector 7 8 9)))
+
+(square-matrix? m1)
+;Value: #t
+
+(square-matrix? (vector v1))
+;Value: #f  
+
+(square-matrix? (vector (vector 1 2 3) (vector 4 5 6)))
+;Value: #f 
+
+(vec-remove-nth v1 2)
+;Value 10: #(1 2 4)
+
+(vec-remove-nth v1 0) 
+;Value 11: #(2 3 4) 
+
+(vec-remove-nth v1 3)
+;Value 12: #(1 2 3)   
+
+(laplace-term m1 0)
+;Value: -3 
+
+(laplace-term m1 1)
+;Value: 12   
+
+(laplace-term m1 2) 
+;Value: -9  
+
+(det-large-mats m1)
+;Value: 0 
+
 ; tests on determinant
 
-(determinant (vector (vector 1 2) (3 4)))
+(determinant-mats (vector (vector 1)))
+; Should produce 1
+;Value: 1
+
+(determinant-mats (vector (vector 1 2) (vector 3 4)))
 ; Should produce -2
+;Value: -2 
 
-(determinant (vector (vector 1 -1) (-1 1)))
+(determinant-mats (vector (vector 1 -1) (vector -1 1)))
 ; Should produce 0
+;Value: 0
 
-(determinant (vector (vector 1 2 3) (vector 4 5 0) (vector 7 8 9)))
+(determinant-mats (vector (vector 1 2 3) (vector 4 5 0) (vector 7 8 9)))
 ; Should produce -36  
+;Value: -36 
 
-(determinant (vector (vector 1 2 3) (vector 4 5 6) (vector 7 8 9)))
+(determinant-mats (vector (vector 1 2 3) (vector 4 5 6) (vector 7 8 9)))
 ; Should produce 0
+;Value: 0 
 
-(determinant (vector (vector 1 1 0 1) (vector 1 1 1 0) (vector 1 0 1 1) (vector 1 1 0 0)))
+(determinant-mats (vector (vector 1 1 0 1) (vector 1 1 1 0) 
+(vector 1 0 1 1) (vector 1 1 0 0)))
 ; Should produce -1
+;Value: -1 
+
+(determinant-mats (vector (vector 1 2 3) (vector 4 5 6)))
+; Should produce an error for not being a square matrix
+;Not a square matrix: #(#(1 2 3) #(4 5 6))
 
 ; tests on matrix inverse
 
@@ -138,13 +188,15 @@
 ; Should say the matrix is not invertible                                                                   
 
 (inverse (vector (vector 1 2 3) (vector 4 5 0) (vector 7 8 9)))
-; Should produce (vector (vector -1.25 -.1666666 .416666666) (vector 1 .333333 -0.333333) (vector .08333333 -.1666666 .08333333))
+; Should produce (vector (vector -1.25 -.1666666 .416666666) 
+; (vector 1 .333333 -0.333333) (vector .08333333 -.1666666 .08333333))
 
 (inverse (vector (vector 1 2 3) (vector 4 5 6) (vector 7 8 9)))
 ; Should say the matrix is not invertible
 
 (inverse (vector (vector 1 1 0 1) (vector 1 1 1 0) (vector 1 0 1 1) (vector 1 1 0 0)))
-; Should produce (vector (vector -1 -1 1 2) (vector 1 1 -1 -1) (vector 0 1 0 -1) (vector 1 0 0 -1))  
+; Should produce (vector (vector -1 -1 1 2) (vector 1 1 -1 -1) 
+; (vector 0 1 0 -1) (vector 1 0 0 -1))  
 
 
 ; tests on division
