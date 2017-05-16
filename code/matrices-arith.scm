@@ -87,12 +87,12 @@
 (define (square-matrix? m1)
   (and matrix? (= (vector-length m1) (vector-length (vector-first m1)))))
 
-(define (det-2by2-mats m1)
-  (let ((a (vector-first (vector-first m1)))
-        (b (vector-first (vector-second m1)))
-        (c (vector-second (vector-first m1)))
-        (d (vector-second (vector-second m1))))
-    (- (* a d) (* b c))))
+;(define (det-2by2-mats m1)
+;  (let ((a (vector-first (vector-first m1)))
+;        (b (vector-first (vector-second m1)))
+;        (c (vector-second (vector-first m1)))
+;        (d (vector-second (vector-second m1))))
+;    (- (* a d) (* b c))))
 
 (define (vec-remove-nth v1 n)
   (let ((v3 (vector-head v1 n))
@@ -101,14 +101,22 @@
     (subvector-move-left! v4 0 (vector-length v4) v5 (vector-length v3))
     v5))
 
+(define (submats m1 row column)
+  (define parity
+    (if (even? (+ row column))
+        1
+        -1))
+  (* parity
+     (vector-map (lambda (v1) (vec-remove-nth v1 column)) (vec-remove-nth m1 row))))
+
 (define (laplace-term m1 n)
-  (define coef
-    (if (even? n)
-        (vector-ref (vector-first m1) n)
-        (- (vector-ref (vector-first m1) n))))
-  (define submats
-    (vector-map (lambda (v1) (vec-remove-nth v1 n)) (vector-tail m1 1)))
-  (* coef (determinant-mats submats)))
+;  (define coef
+;    (if (even? n)
+;        (vector-ref (vector-first m1) n)
+;        (- (vector-ref (vector-first m1) n))))
+;  (define submats
+;    (vector-map (lambda (v1) (vec-remove-nth v1 n)) (vector-tail m1 1)))
+  (* (vector-ref (vector-first m1) n) (determinant-mats (submats m1 0 n))))
 
 (define (large-mats-helper m1 n sum)
   (if (<= (vector-length m1) n)
@@ -121,9 +129,43 @@
 (define (determinant-mats m1)
   (if (square-matrix? m1)
       (cond ((= (vector-length m1) 1) (vector-first (vector-first m1)))
-            ((= (vector-length m1) 2) (det-2by2-mats m1))
+;            ((= (vector-length m1) 2) (det-2by2-mats m1))
             (else (det-large-mats m1)))
       (error "Not a square matrix:" m1)))
+
+(define (copy-mats m1)
+;  (define m2 (vector-copy m1))
+  (vector-map vector-copy m1))
+
+(define (cofactor-helper m1 m2 row column)
+  (vector-set! (vector-ref m2 row)
+               column
+               (determinant-mats (submats m1 row column)))
+  (cond ((and (< row (vector-length m1))
+              (< (+ column 1) (vector-length (vector-first m1))))
+         (cofactor-helper m1 m2 row (+ column 1)))
+        ((and (< (+ row 1) (vector-length m1))
+              (= (+ column 1) (vector-length (vector-first m1))))
+         (cofactor-helper m1 m2 (+ row 1) 0))
+        ((and (= (+ row 1) (vector-length m1))
+              (= (+ column 1) (vector-length (vector-first m1))))
+         m2)
+        (else (error "cofactor helper out of bounds"))))
+         
+(define (cofactor m1)
+  (cofactor-helper m1 (copy-mats m1) 0 0))
+
+(define (inverse-large-mats m1)
+  (* (/ 1 (determinant-mats m1)) (transpose (cofactor m1))))
+
+(define (inverse-mats m1)
+  (let ((det (determinant-mats m1)))
+    (if (= 0 det)
+        (error "Determinant is 0:" m1)
+        (if (= (vector-length m1) 1)
+             (/ 1 det)
+             ()))))
+  
 
 (define (matrix-extender base-arithmetic)
 	(make-arithmetic 'matrix matrix? (list base-arithmetic)

@@ -136,6 +136,18 @@
 (vec-remove-nth v1 3)
 ;Value 12: #(1 2 3)   
 
+(submats m1 0 0)
+;Value 3: #(#(5 6) #(8 9))  
+
+(submats m1 2 2)
+;Value 6: #(#(1 2) #(4 5))
+
+(submats m1 1 2)
+;Value 7: #(#(-1 -2) #(-7 -8))
+
+(submats (submats m1 2 2) 1 1)
+;Value 8: #(#(1)) 
+
 (laplace-term m1 0)
 ;Value: -3 
 
@@ -178,6 +190,25 @@
 (determinant-mats (vector (vector 1 2 3) (vector 4 5 6)))
 ; Should produce an error for not being a square matrix
 ;Not a square matrix: #(#(1 2 3) #(4 5 6))
+
+; tests on subfunctions for inverse
+
+(define m2 (copy-mats m1))
+(vector-set! (vector-ref m2 0) 0 50)
+; Should change the first element of m2 to 50, while
+; the first element of m1 remains 1
+m2
+;Value 4: #(#(50 2 3) #(4 5 6) #(7 8 9)) 
+m1
+;Value 5: #(#(1 2 3) #(4 5 6) #(7 8 9)) 
+
+(cofactor m1)
+;Value 3: #(#(-3 -6 -3) #(-6 -12 -6) #(-3 -6 -3)) 
+
+(cofactor m2)
+;Value 4: #(#(-3 -6 -3) #(-6 429 386) #(-3 288 242)) 
+
+(inverse-large-mats m2)
 
 ; tests on matrix inverse
 
