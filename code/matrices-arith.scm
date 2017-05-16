@@ -20,8 +20,14 @@
 	(if (not (n:= (vector-length (vector-first m1)) (vector-length m2)))
 	(error "Matrix Multiplication Dimension Mismatch:" (list m1 m2))))
 
+(define (rectangular? object)
+	(define row-size (vector-length (vector-first object)))
+	(if (every (lambda (v) (= row-size (vector-length v))) (vector->list object))
+	#t
+	#f))
+
 (define (matrix? object)
-	(if (and (vector? object)
+	(if (and (vector? object) (rectangular? object)
 		(every (lambda (v)
 			(ext-vector? v)) (vector->list object)))
 	#t
