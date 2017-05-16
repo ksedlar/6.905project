@@ -108,12 +108,15 @@
     v5))
 
 (define (submats m1 row column)
+  (vector-map (lambda (v1) (vec-remove-nth v1 column)) (vec-remove-nth m1 row)))
+
+; Also flips to the right parity
+(define (determinant-submats m1 row column)
   (define parity
     (if (even? (+ row column))
         1
         -1))
-  (* parity
-     (vector-map (lambda (v1) (vec-remove-nth v1 column)) (vec-remove-nth m1 row))))
+  (* parity (determinant-mats (submats m1 row column))))
 
 (define (laplace-term m1 n)
 ;  (define coef
@@ -122,7 +125,8 @@
 ;        (- (vector-ref (vector-first m1) n))))
 ;  (define submats
 ;    (vector-map (lambda (v1) (vec-remove-nth v1 n)) (vector-tail m1 1)))
-  (* (vector-ref (vector-first m1) n) (determinant-mats (submats m1 0 n))))
+;  (* coef (determinant-mats submats)))
+  (* (vector-ref (vector-first m1) n) (determinant-submats m1 0 n)))
 
 (define (large-mats-helper m1 n sum)
   (if (<= (vector-length m1) n)
@@ -140,13 +144,12 @@
       (error "Not a square matrix:" m1)))
 
 (define (copy-mats m1)
-;  (define m2 (vector-copy m1))
   (vector-map vector-copy m1))
 
 (define (cofactor-helper m1 m2 row column)
   (vector-set! (vector-ref m2 row)
                column
-               (determinant-mats (submats m1 row column)))
+               (determinant-submats m1 row column))
   (cond ((and (< row (vector-length m1))
               (< (+ column 1) (vector-length (vector-first m1))))
          (cofactor-helper m1 m2 row (+ column 1)))
@@ -162,7 +165,7 @@
   (cofactor-helper m1 (copy-mats m1) 0 0))
 
 (define (inverse-large-mats m1)
-  (* (/ 1 (determinant-mats m1)) (transpose (cofactor m1))))
+  (* (/ 1 (determinant-mats m1)) (car (transpose (cofactor m1)))))
 
 (define (inverse-mats m1)
   (let ((det (determinant-mats m1)))
@@ -170,7 +173,7 @@
         (error "Determinant is 0:" m1)
         (if (= (vector-length m1) 1)
              (/ 1 det)
-             ()))))
+             (inverse-large-mats m1)))))
   
 
 (define (matrix-extender base-arithmetic)

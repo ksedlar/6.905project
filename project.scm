@@ -2,6 +2,7 @@
 ; Katie Sedlar, Vincent Anioke
 
 (load "code/load.scm")
+(load "code/matrices-arith.scm")
 
 ; We are implementing matrix arithmetic.
 
@@ -26,7 +27,7 @@
 
 (matrix? (vector (vector 1 2) (vector 2 3 4)))
 ; Should produce #f
-; DOESN'T WORK
+;Value: #f 
 
 (matrix? (vector 3 4))
 ; Should produce #f
@@ -148,6 +149,9 @@
 (submats (submats m1 2 2) 1 1)
 ;Value 8: #(#(1)) 
 
+(determinant-submats m1 2 2)
+;Value: -3 
+
 (laplace-term m1 0)
 ;Value: -3 
 
@@ -203,31 +207,36 @@ m1
 ;Value 5: #(#(1 2 3) #(4 5 6) #(7 8 9)) 
 
 (cofactor m1)
-;Value 3: #(#(-3 -6 -3) #(-6 -12 -6) #(-3 -6 -3)) 
+;Value 19: #(#(-3 6 -3) #(6 -12 6) #(-3 6 -3)) 
 
 (cofactor m2)
-;Value 4: #(#(-3 -6 -3) #(-6 429 386) #(-3 288 242)) 
-
-(inverse-large-mats m2)
+;Value 20: #(#(-3 6 -3) #(6 429 -386) #(-3 -288 242)) 
 
 ; tests on matrix inverse
 
-(inverse (vector (vector 1 2) (3 4)))
+(inverse-mats (vector (vector 1 2) (vector 3 4)))
 ; Should produce (vector (vector -2 1) (vector 1.5 -0.5))
+;Value 9: #(#(-2 1) #(3/2 -1/2)) 
 
-(inverse (vector (vector 1 -1) (-1 1)))
-; Should say the matrix is not invertible                                                                   
+(inverse-mats (vector (vector 1 -1) (vector -1 1)))
+; Should say the matrix is not invertible          
+;Determinant is 0: #(#(1 -1) #(-1 1))                                                          
 
-(inverse (vector (vector 1 2 3) (vector 4 5 0) (vector 7 8 9)))
+(inverse-mats (vector (vector 1 2 3) (vector 4 5 0) (vector 7 8 9)))
 ; Should produce (vector (vector -1.25 -.1666666 .416666666) 
 ; (vector 1 .333333 -0.333333) (vector .08333333 -.1666666 .08333333))
+;Value 18: #(#(-5/4 -1/6 5/12) #(1 1/3 -1/3) #(1/12 -1/6 1/12)) 
 
-(inverse (vector (vector 1 2 3) (vector 4 5 6) (vector 7 8 9)))
+(inverse-mats (vector (vector 1 2 3) (vector 4 5 6) (vector 7 8 9)))
 ; Should say the matrix is not invertible
+;Determinant is 0: #(#(1 2 3) #(4 5 6) #(7 8 9)) 
 
-(inverse (vector (vector 1 1 0 1) (vector 1 1 1 0) (vector 1 0 1 1) (vector 1 1 0 0)))
+(inverse-mats (vector (vector 1 1 0 1) (vector 1 1 1 0) (vector 1 0 1 1) (vector 1 1 0 0)))
 ; Should produce (vector (vector -1 -1 1 2) (vector 1 1 -1 -1) 
 ; (vector 0 1 0 -1) (vector 1 0 0 -1))  
-
+;Value 14: #(#(-1 -1 1 2) #(1 1 -1 -1) #(0 1 0 -1) #(1 0 0 -1)) 
 
 ; tests on division
+
+
+
