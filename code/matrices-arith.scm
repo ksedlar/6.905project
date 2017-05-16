@@ -86,6 +86,8 @@
 		((and (matrix? m1) (or (symbolic? m2) (number? m2))) (mult-by-scalar m1 m2))
 		((and (or (symbolic? m1) (number? m1)) (matrix? m2)) (mult-by-scalar m2 m1))))
 
+
+
 (define (negate-mat m1)
 	(define neg-op (matrix-element-wise negate-vect))
 	(neg-op m1))
@@ -169,37 +171,50 @@
 
 (define (inverse-mats m1)
   (let ((det (determinant-mats m1)))
-    (if (= 0 det)
+    (if (eq? 0 det)
         (error "Determinant is 0:" m1)
         (if (= (vector-length m1) 1)
              (/ 1 det)
              (inverse-large-mats m1)))))
-  
+
+(define (div-mats m1 m2)
+	(mult-mats m1 (inverse-mats m2)))
+
+(define (div-by-scalar mat scalar)
+  (mult-by-scalar mat (/ 1 scalar)))
+
+(define (divide-mats m1 m2)
+	(cond ((and (matrix? m1) (matrix? m2)) (div-mats m1 m2))
+		((and (matrix? m1) (or (symbolic? m2) (number? m2))) (mult-by-scalar m1 m2))
+                ((= m1 1) (inverse-mats m2))
+		((and (or (symbolic? m1) (number? m1)) (matrix? m2)) (error "Attempted to divide scalar by matrix" m2))))
 
 (define (matrix-extender base-arithmetic)
-	(make-arithmetic 'matrix matrix? (list base-arithmetic)
-	(lambda (name base-constant)
-		base-constant)
-	(let ((base-predicate
-		(arithmetic-domain-predicate base-arithmetic)))
-		(lambda (operator base-operation)
-	(let ((procedure
-		(case operator
-		((+) (lambda (a b)
-			(add-mats a b)))
-		((-) (lambda (a b)
-			(sub-mats a b)))
-		((*) (lambda (a b)
-			(multiply-mats a b)))
-		((negate) (lambda (a)
-			(negate-mat a)))
-		(else (lambda args
-			(error "Operator undefined in Matrix Arithmetic" operator))))))
-		(and procedure
-			(make-operation operator
-				(all-args (operator-arity operator)
-					matrix-or-scalar?)
-				procedure)))))))
+  (make-arithmetic 'matrix matrix? (list base-arithmetic)
+                   (lambda (name base-constant)
+                     base-constant)
+                   (let ((base-predicate
+                          (arithmetic-domain-predicate base-arithmetic)))
+                     (lambda (operator base-operation)
+                       (let ((procedure
+                              (case operator
+                                ((+) (lambda (a b)
+                                       (add-mats a b)))
+                                ((-) (lambda (a b)
+                                       (sub-mats a b)))
+                                ((*) (lambda (a b)
+                                       (multiply-mats a b)))
+                                ((/) (lambda (a b)
+                                       (divide-mats a b)))
+                                ((negate) (lambda (a)
+                                            (negate-mat a)))
+                                (else (lambda args
+                                        (error "Operator undefined in Matrix Arithmetic" operator))))))
+                         (and procedure
+                              (make-operation operator
+                                              (all-args (operator-arity operator)
+                                                        matrix-or-scalar?)
+                                              procedure)))))))
 
 
 ;;; combined-arithmetic is defined in vector-arith.scm

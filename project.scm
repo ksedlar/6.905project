@@ -174,6 +174,10 @@
 ; Should produce -2
 ;Value: -2 
 
+(determinant-mats (vector (vector 'a 'b) (vector 3 4)))
+; Should produce 4a - 3b
+;Value 27: (+ (+ 0 (* a 4)) (* b -3))   
+
 (determinant-mats (vector (vector 1 -1) (vector -1 1)))
 ; Should produce 0
 ;Value: 0
@@ -220,7 +224,13 @@ m1
 
 (inverse-mats (vector (vector 1 -1) (vector -1 1)))
 ; Should say the matrix is not invertible          
-;Determinant is 0: #(#(1 -1) #(-1 1))                                                          
+;Determinant is 0: #(#(1 -1) #(-1 1))   
+
+(inverse-mats (vector (vector 'a 2) (vector 3 'b)))
+;Value 29: #(#((* (* 1 b) (/ 1 (+ (+ 0 (* a (* 1 b))) -6))) 
+; (* -2 (/ 1 (+ (+ 0 (* a (* 1 b))) -6)))) 
+; #((* -3 (/ 1 (+ (+ 0 (* a (* 1 b))) -6))) 
+; (* (* 1 a) (/ 1 (+ (+ 0 (* a (* 1 b))) -6)))))
 
 (inverse-mats (vector (vector 1 2 3) (vector 4 5 0) (vector 7 8 9)))
 ; Should produce (vector (vector -1.25 -.1666666 .416666666) 
@@ -238,5 +248,47 @@ m1
 
 ; tests on division
 
+(define m3 (vector (vector 1 6 4) (vector 9 2 3) (vector 5 7 8)))
+(define m4 (vector (vector 10 7 4) (vector 2 1 4) (vector 6 3 2)))
 
+(/ m3 m4) 
+; Should be #(#(11/4 11/20 -23/5) #(-5/4 1/4 7/2) #(9/4 29/20 -17/5))  
+;Value 21: #(#(11/4 11/20 -23/5) #(-5/4 1/4 7/2) #(9/4 29/20 -17/5)) 
 
+(/ m4 m3)
+; Should be #(#(79/45 64/45 -41/45) #(-29/27 -8/27 31/27) #(19/27 22/27 -11/27)) 
+;Value 24: #(#(79/45 64/45 -41/45) #(-29/27 -8/27 31/27) #(19/27 22/27 -11/27)) 
+
+(/ m3 m1)
+; Should produce an error
+;Determinant is 0: #(#(1 2 3) #(4 5 6) #(7 8 9)) 
+
+(/ m1 3)
+; Should be #(#(3 6 9) #(12 15 18) #(21 24 27))  
+;Value 25: #(#(3 6 9) #(12 15 18) #(21 24 27))
+
+(define m5 (vector (vector 1 2) (vector 3 4)))
+(define m6 (vector (vector 4 3) (vector 6 7)))
+
+(/ m5 m6)
+; Should be #(#(-1/2 1/2) #(-3/10 7/10))
+;Value 26: #(#(-1/2 1/2) #(-3/10 7/10)) 
+
+(/ m5 m4)
+; Should produce an error
+;Matrix Multiplication Dimension Mismatch: (#(... ...) #(... ... ...))  
+
+(define m7 (vector (vector 'a 2) (vector 3 4)))
+
+(/ m7 m6)
+;Value 30: #(#((+ (* a 7/10) -6/5) (+ (* a -3/10) 4/5)) #(-3/10 7/10))
+
+(/ m6 m7)
+;Value 31: #(#((+ (* 4 (* 4 (/ 1 (+ (+ 0 (* a 4)) -6)))) 
+; (+ (* 3 (* -3 (/ 1 (+ (+ 0 (* a 4)) -6)))) 0)) 
+; (+ (* 4 (* -2 (/ 1 (+ (+ 0 (* a 4)) -6)))) 
+; (+ (* 3 (* (* 1 a) (/ 1 (+ (+ 0 (* a 4)) -6)))) 0))) 
+; #((+ (* 6 (* 4 (/ 1 (+ (+ 0 (* a 4)) -6)))) 
+; (+ (* 7 (* -3 (/ 1 (+ (+ 0 (* a 4)) -6)))) 0)) 
+; (+ (* 6 (* -2 (/ 1 (+ (+ 0 (* a 4)) -6)))) 
+; (+ (* 7 (* (* 1 a) (/ 1 (+ (+ 0 (* a 4)) -6)))) 0))))
